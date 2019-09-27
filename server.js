@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const axios = require ('axios');
 const fs = require('fs');
 let dateFormat = require('dateformat');
+const {join} = require('path');
 
 
 const server= express();
@@ -50,15 +50,28 @@ router.post('/download-list', (req, res) => {
     connection.connect();
     connection.query(`SELECT * FROM movies`, (error, results) => {
         if(error) throw error;
+        
+        let text_file = '';
+        let date = new Date();
+        let week_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let day_idx = date.getDay();
+        let day = week_days[day_idx];
+        let month = date.getMonth();
+        console.log(date, day, month);
+        
+        results.forEach(data => {
+            text_file = text_file + '|' + data.title + ' - ' + data.date;
+        });
+        console.log(text_file);
+        res.status(201).json(results);
 
-        let json_to_file = JSON.parse.json(results[0]);
-        let file_name = join('./movies/movie_list', `${new Date}.txt`)
-        fs.writeFile(file_name, file_name, 'utf8', function (err) {
+        fs.writeFile(`movies/movie_list_${day}_${month}.txt`, text_file, 'utf8', function (err) {
             if (err) {
-                console.log("An error occured while writing JSON Object to File.");
+                console.log("An error occured while writing the Movie list to File.");
                 return console.log(err);
-            }
-            console.log("JSON file has been saved.");
+            }    
+            console.log("Movie list has been saved."); 
+            res.status(201).json(results);
         });
     })
 })
