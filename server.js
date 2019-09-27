@@ -3,6 +3,7 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const axios = require ('axios');
+const fs = require('fs');
 let dateFormat = require('dateformat');
 
 
@@ -19,10 +20,11 @@ server.use(cors());
 
 // ------------- ROUTING ---------------
 
-// homepage
+// FRONT-END FORMS
 router.get('/', (req, res) => {
     homepage(res);
 })
+
 
 router.get('/list', (req, res) => {
     connection.connect();
@@ -44,6 +46,23 @@ router.get('/edit/:id', (req, res) => {
 })
 
 // BACK-END API
+router.post('/download-list', (req, res) => {
+    connection.connect();
+    connection.query(`SELECT * FROM movies`, (error, results) => {
+        if(error) throw error;
+
+        let json_to_file = JSON.parse.json(results[0]);
+        let file_name = join('./movies/movie_list', `${new Date}.txt`)
+        fs.writeFile(file_name, file_name, 'utf8', function (err) {
+            if (err) {
+                console.log("An error occured while writing JSON Object to File.");
+                return console.log(err);
+            }
+            console.log("JSON file has been saved.");
+        });
+    })
+})
+
 router.post('/new-movie', (req, res) => {
     connection.connect();
     connection.query(`INSERT INTO movies (title, date) VALUES ("${req.body.title}", "${req.body.creation_date}")`);
@@ -58,6 +77,16 @@ router.post('/edit-movie/:id', (req, res) => {
     connection.query(`UPDATE movies SET title="${req.body.title}", date="${req.body.creation_date}" WHERE id=${id}`, (error, result) => {
         if(error) throw error;
         res.status(201).json(req.body);
+    })
+})
+
+router.post('/delete/:id', (req, res) => {
+    const { id } = req.params;
+    
+    connection.connect();
+    connection.query(`DELETE FROM movies WHERE id=${id}`, (error, result) => {
+        if(error) throw error;
+        res.status(201).send(`Movie with id ${id} has been deleted`);
     })
 })
 
