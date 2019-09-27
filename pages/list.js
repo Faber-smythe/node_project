@@ -1,4 +1,24 @@
-let homepage = (res) => {
+let list = (res, results) => {
+    let table = `
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>RELEASE</th>
+        </tr>
+    `
+    results.forEach((movie) => {
+        table = `${table} 
+            <tr>
+                <th>${movie.id}</th>
+                <th>${movie.name}</th>
+                <th>${movie.creation_date}</th>
+            </tr>
+        `;
+    })
+
+    table = `${table} </table>`;
+
     res.send(`
 
     <script>
@@ -28,24 +48,12 @@ let homepage = (res) => {
     </script>
 
     <h1>NODE API PROJECT </h1>
-    <h2> Add a movie to database </h2>
-
-
-    <form method="post" action="./new-movie" onSubmit="jsonparse(event)">
-
-        <label for="title">Title</label>
-        <input type="texte" id="title" name="title"></input>
-
-        <label for="creation_date">Creation date</label>
-        <input type="date" id="creation_date" name="creation_date"></input>
-
-        <input type="submit" value="Send" />    
-    </form>
-
-    <br>
-    <a href="./list">See the list</a>
+    <h2>Movie List :</h2>
     
+        ${table};
+
+    <a href="./">Add a movie</a>
     `);
 }
 
-module.exports = {homepage};
+module.exports = {list};
