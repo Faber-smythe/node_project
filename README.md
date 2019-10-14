@@ -1,3 +1,7 @@
+# NATURE DU PROJET :
+#### Exercice imposé dans le cadre de mes études à l'IIM. 
+#### Ce repository n'est destiné qu'à notation par l'intervenant en charge de ce module.
+
 # Installation
 
 ### > Git clone
